@@ -1,10 +1,12 @@
 package angga
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 	"os"
+	"strings"
 )
 
 //const (
@@ -43,25 +45,27 @@ func insert(db *sql.DB, judul string, sutradara string, negara string, tahun int
 }
 
 func add(db *sql.DB) {
+	reader := bufio.NewReader(os.Stdin)
+
 	fmt.Print("Judul : ")
-	var judul string
-	fmt.Scan(&judul)
+	str1, _ := reader.ReadString('\n')
+	judul := strings.Trim(strings.Trim(str1, "\n"), " ")
 
 	fmt.Print("Sutradara : ")
-	var sutradara string
-	fmt.Scan(&sutradara)
+	str2, _ := reader.ReadString('\n')
+	sutradara := strings.Trim(strings.Trim(str2, "\n"), " ")
 
 	fmt.Print("negara : ")
-	var negara string
-	fmt.Scan(&negara)
+	str3, _ := reader.ReadString('\n')
+	negara := strings.Trim(strings.Trim(str3, "\n"), " ")
 
 	fmt.Print("tahun : ")
 	var tahun int
 	fmt.Scan(&tahun)
 
 	fmt.Print("gendre : ")
-	var gendre string
-	fmt.Scan(&gendre)
+	str4, _ := reader.ReadString('\n')
+	gendre := strings.Trim(strings.Trim(str4, "\n"), " ")
 
 	var addMovie movie
 	addMovie.judul = judul
@@ -74,15 +78,9 @@ func add(db *sql.DB) {
 
 }
 
-func View(db *sql.DB) {
-
-	var judul string
-	fmt.Print("Masukan Judul : ")
-	fmt.Scan(&judul)
-
-	rows, err := db.Query("SELECT * FROM movies WHERE JUDUL = $1", judul)
+func View(rows *sql.Rows, err error) {
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Print(err.Error())
 		return
 	}
 	defer rows.Close()
@@ -94,7 +92,7 @@ func View(db *sql.DB) {
 		var err = rows.Scan(&each.id, &each.judul, &each.sutradara, &each.negara, &each.tahun, &each.gendre)
 
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Print(err.Error())
 			return
 		}
 
@@ -102,14 +100,13 @@ func View(db *sql.DB) {
 	}
 
 	if err = rows.Err(); err != nil {
-		fmt.Println(err.Error())
+		fmt.Print(err.Error())
 		return
 	}
 
-	for _, each := range result {
-		fmt.Println("Judul : ", each.judul, "Sutradara : ", each.sutradara, "Negara : ", each.negara, "Tahun : ", each.tahun, "Gendre : ", each.gendre)
+	for i := 0; i < len(result); i++ {
+		fmt.Println(i+1, ".", "Judul : ", result[i].judul, " | Sutradara : ", result[i].sutradara, " | Negara : ", result[i].negara, " | Tahun : ", result[i].tahun, " | Gendre : ", result[i].gendre)
 	}
-
 }
 
 func update(db *sql.DB) {
@@ -147,9 +144,11 @@ func update(db *sql.DB) {
 }
 
 func delete(db *sql.DB) {
+	reader := bufio.NewReader(os.Stdin)
+
 	fmt.Print("Judul Yang ingin dihapus : ")
-	var judul string
-	fmt.Scan(&judul)
+	judul, _ := reader.ReadString('\n')
+
 	_, err := db.Exec("DELETE FROM MOVIES WHERE JUDUL=$1", judul)
 	if err != nil {
 		fmt.Println(err)
@@ -183,7 +182,41 @@ func Main() {
 		case 1:
 			add(db)
 		case 2:
-			View(db)
+			var optView int
+			fmt.Println("Opsi Pencarian :")
+			fmt.Println("1. Semua Data")
+			fmt.Println("2. Judul")
+			fmt.Println("3. Tahun")
+			fmt.Println("4. Gendre")
+			fmt.Print("Opsi : ")
+			fmt.Scan(&optView)
+
+			switch optView {
+			case 1:
+				rows, err := db.Query("SELECT * FROM movies")
+				View(rows, err)
+			case 2:
+				var judul string
+				fmt.Print("Masukan Judul : ")
+				fmt.Scan(&judul)
+
+				rows, err := db.Query("SELECT * FROM movies WHERE JUDUL = $1", judul)
+				View(rows, err)
+			case 3:
+				var tahun string
+				fmt.Print("Masukan Tahun : ")
+				fmt.Scan(&tahun)
+
+				rows, err := db.Query("SELECT * FROM movies WHERE TAHUN LIKE '%' || $1 || '%'", tahun)
+				View(rows, err)
+			case 4:
+				var gendre string
+				fmt.Print("Masukan Gendre : ")
+				fmt.Scan(&gendre)
+
+				rows, err := db.Query("SELECT * FROM movies WHERE GENDRE LIKE '%' || $1 || '%'", gendre)
+				View(rows, err)
+			}
 		case 3:
 			update(db)
 		case 4:
