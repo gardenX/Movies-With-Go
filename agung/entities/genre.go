@@ -11,6 +11,14 @@ type Genre struct {
 	Name string
 }
 
+func (g *Genre) Find() (err error) {
+	err = conf.Db.
+		QueryRow("SELECT id, name FROM genres WHERE id = $1 AND deleted_at is NULL", g.Id).
+		Scan(&g.Id, &g.Name)
+
+	return
+}
+
 func (g *Genre) Create() (err error) {
 	err = conf.Db.QueryRow(fmt.Sprintf(
 		"INSERT INTO genres (name, created_at, updated_at) VALUES ('%[1]s', '%[2]s', '%[2]s') RETURNING id",
@@ -19,4 +27,20 @@ func (g *Genre) Create() (err error) {
 	)).Scan(&g.Id)
 
 	return err
+}
+
+func (g *Genre) Update() error {
+	return conf.Db.QueryRow(
+		"UPDATE genres SET name = $1 WHERE genres.id = $2 AND deleted_at IS NULL RETURNING genres.name",
+		g.Name,
+		g.Id,
+	).Scan(&g.Name)
+}
+
+func (g *Genre) Delete() error {
+	return conf.Db.QueryRow(
+		"UPDATE genres SET deleted_at = $1 WHERE genres.id = $2 AND deleted_at IS NULL RETURNING genres.id",
+		time.Now().Format(time.RFC3339),
+		g.Id,
+	).Scan(&g.Id)
 }

@@ -10,14 +10,6 @@ type GenreSearchRequest struct {
 	Name string
 }
 
-func (g genreRepository) Find(id string) (genre entities.Genre, err error) {
-	err = conf.Db.
-		QueryRow("SELECT id, name FROM genres WHERE id = $1 AND deleted_at is NULL", id).
-		Scan(&genre.Id, &genre.Name)
-
-	return
-}
-
 func (g genreRepository) Search(request GenreSearchRequest) (genres []entities.Genre, err error) {
 	genres = []entities.Genre{}
 	rows, err := conf.Db.Query(fmt.Sprintf(

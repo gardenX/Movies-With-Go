@@ -4,6 +4,7 @@ import (
 	"anggafirdaus10/agung/entities"
 	"anggafirdaus10/agung/helpers"
 	"anggafirdaus10/agung/repositories"
+	"fmt"
 	"github.com/urfave/cli/v2"
 )
 
@@ -16,6 +17,8 @@ var (
 		genreFindCommand(),
 		genreSearchCommand(),
 		genreCreateCommand(),
+		genreUpdateCommand(),
+		genreDeleteCommand(),
 	}
 )
 
@@ -27,7 +30,8 @@ func genreFindCommand() *cli.Command {
 			genreFlags["id"],
 		},
 		Action: func(cCtx *cli.Context) error {
-			genre, err := repositories.GenreRepository.Find(cCtx.String("id"))
+			genre := entities.Genre{Id: cCtx.Int("id")}
+			err := genre.Find()
 			var genres []entities.Genre
 
 			if err == nil {
@@ -81,6 +85,68 @@ func genreCreateCommand() *cli.Command {
 			helpers.PrintGenresTable([]entities.Genre{genre})
 
 			return nil
+		},
+	}
+}
+
+func genreUpdateCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "update",
+		Usage: "update a genre",
+		Flags: []cli.Flag{
+			genreFlags["id"],
+			genreFlags["name"],
+		},
+		Action: func(cCtx *cli.Context) error {
+			genre := entities.Genre{Id: cCtx.Int("id")}
+			err := genre.Find()
+
+			if err != nil {
+				fmt.Println("No genre updated")
+				return nil
+			}
+
+			if cCtx.String("name") != "" {
+				genre.Name = cCtx.String("name")
+				err = genre.Update()
+			}
+
+			if err != nil {
+				return err
+			}
+
+			helpers.PrintGenresTable([]entities.Genre{genre})
+
+			return err
+		},
+	}
+}
+
+func genreDeleteCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "delete",
+		Usage: "delete a genre",
+		Flags: []cli.Flag{
+			genreFlags["id"],
+		},
+		Action: func(cCtx *cli.Context) error {
+			genre := entities.Genre{Id: cCtx.Int("id")}
+			err := genre.Find()
+
+			if err != nil {
+				fmt.Println("No genre deleted")
+				return nil
+			}
+
+			err = genre.Delete()
+
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(fmt.Sprintf("Genre with ID %d deleted", genre.Id))
+
+			return err
 		},
 	}
 }
