@@ -48,6 +48,11 @@ func App() {
 				Usage:       "manage genres",
 				Subcommands: commands.GenreCommands,
 			},
+			{
+				Name:        "people",
+				Usage:       "manage people",
+				Subcommands: commands.PersonCommands,
+			},
 		},
 	}
 

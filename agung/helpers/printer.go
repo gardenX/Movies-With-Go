@@ -49,3 +49,17 @@ func PrintGenresTable(genres []entities.Genre) {
 
 	output.Print()
 }
+
+func PrintPeopleTable(people []entities.Person) {
+	output := table.New("ID", "Name")
+
+	if len(people) == 0 {
+		output.AddRow("Empty")
+	}
+
+	for _, i := range people {
+		output.AddRow(i.Id, i.Name)
+	}
+
+	output.Print()
+}

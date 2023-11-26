@@ -1,9 +1,13 @@
 package repositories
 
 var (
-	GenreRepository = genreRepository{}
-	MovieRepository = movieRepository{}
+	GenreRepository  = genreRepository{}
+	PersonRepository = personRepository{}
+	MovieRepository  = movieRepository{}
 )
+
+type personRepository struct {
+}
 
 type genreRepository struct {
 }
