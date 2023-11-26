@@ -69,11 +69,3 @@ type MovieSearchRequest struct {
 	Year  string
 	Genre string
 }
-
-func (r movieRepository) Find(id string) (movie entities.Movie, err error) {
-	err = conf.Db.
-		QueryRow("SELECT m.id, m.title, m.released_at, m.director_id, m.country_id FROM movies m WHERE m.id = $1 AND deleted_at is NULL", id).
-		Scan(&movie.Id, &movie.Title, &movie.ReleasedAt, &movie.Director.Id, &movie.Country.Id)
-
-	return
-}
