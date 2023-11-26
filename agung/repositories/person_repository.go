@@ -11,7 +11,6 @@ type PersonSearchRequest struct {
 }
 
 func (g personRepository) Search(request PersonSearchRequest) (people []entities.Person, err error) {
-	people = []entities.Person{}
 	rows, err := conf.Db.Query(
 		"SELECT id, name FROM people WHERE deleted_at IS NULL and name ILIKE $1",
 		fmt.Sprintf("%[1]s%[2]s%[1]s", "%", request.Name),

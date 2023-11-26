@@ -12,21 +12,17 @@ type Person struct {
 }
 
 func (p *Person) Find() (err error) {
-	err = conf.Db.
+	return conf.Db.
 		QueryRow("SELECT id, name FROM people WHERE id = $1 AND deleted_at is NULL", p.Id).
 		Scan(&p.Id, &p.Name)
-
-	return
 }
 
 func (p *Person) Create() (err error) {
-	err = conf.Db.QueryRow(fmt.Sprintf(
+	return conf.Db.QueryRow(fmt.Sprintf(
 		"INSERT INTO people (name, created_at, updated_at) VALUES ('%[1]s', '%[2]s', '%[2]s') RETURNING id",
 		p.Name,
 		time.Now().Format(time.RFC3339),
 	)).Scan(&p.Id)
-
-	return err
 }
 
 func (p *Person) Update() error {

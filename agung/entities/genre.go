@@ -12,21 +12,17 @@ type Genre struct {
 }
 
 func (g *Genre) Find() (err error) {
-	err = conf.Db.
+	return conf.Db.
 		QueryRow("SELECT id, name FROM genres WHERE id = $1 AND deleted_at is NULL", g.Id).
 		Scan(&g.Id, &g.Name)
-
-	return
 }
 
 func (g *Genre) Create() (err error) {
-	err = conf.Db.QueryRow(fmt.Sprintf(
+	return conf.Db.QueryRow(fmt.Sprintf(
 		"INSERT INTO genres (name, created_at, updated_at) VALUES ('%[1]s', '%[2]s', '%[2]s') RETURNING id",
 		g.Name,
 		time.Now().Format(time.RFC3339),
 	)).Scan(&g.Id)
-
-	return err
 }
 
 func (g *Genre) Update() error {

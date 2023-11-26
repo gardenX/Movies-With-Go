@@ -63,3 +63,17 @@ func PrintPeopleTable(people []entities.Person) {
 
 	output.Print()
 }
+
+func PrintCountryTable(countries []entities.Country) {
+	output := table.New("ID", "Name")
+
+	if len(countries) == 0 {
+		output.AddRow("Empty")
+	}
+
+	for _, i := range countries {
+		output.AddRow(i.Id, i.Name)
+	}
+
+	output.Print()
+}

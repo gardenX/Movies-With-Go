@@ -11,7 +11,6 @@ type GenreSearchRequest struct {
 }
 
 func (g genreRepository) Search(request GenreSearchRequest) (genres []entities.Genre, err error) {
-	genres = []entities.Genre{}
 	rows, err := conf.Db.Query(fmt.Sprintf(
 		"SELECT g.id, g.name FROM genres g WHERE g.deleted_at IS NULL and g.name ILIKE '%[1]s%[2]s%[1]s'",
 		"%",

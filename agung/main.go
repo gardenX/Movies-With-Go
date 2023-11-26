@@ -53,6 +53,11 @@ func App() {
 				Usage:       "manage people",
 				Subcommands: commands.PersonCommands,
 			},
+			{
+				Name:        "countries",
+				Usage:       "manage country",
+				Subcommands: commands.CountryCommands,
+			},
 		},
 	}
 
