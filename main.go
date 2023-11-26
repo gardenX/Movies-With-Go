@@ -1,7 +1,7 @@
 package main
 
-import "anggafirdaus10/angga"
+import "anggafirdaus10/agung"
 
 func main() {
-	angga.Main()
+	agung.App()
 }
